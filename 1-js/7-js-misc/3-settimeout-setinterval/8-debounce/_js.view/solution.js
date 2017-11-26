@@ -1,17 +1,19 @@
 function debounce(f, ms) {
 
-  let timer = null;
+  var state = null;
 
-  return function (...args) {
-    const onComplete = () => {
-      f.apply(this, args);
-      timer = null;
-    }
+  var COOLDOWN = 1;
 
-    if (timer) {
-      clearTimeout(timer);
-    }
+  return function() {
+    if (state) return;
 
-    timer = setTimeout(onComplete, ms);
-  };
+    f.apply(this, arguments);
+
+    state = COOLDOWN;
+
+    setTimeout(function() {
+      state = null
+    }, ms);
+  }
+
 }

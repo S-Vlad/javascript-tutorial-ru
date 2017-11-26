@@ -195,7 +195,7 @@ PropertyError.prototype.constructor = PropertyError;
 
 Мы убрали одну жёсткую привязку к `PropertyError`, но со второй (`this.name`), увы, сложности. Оно должно содержать имя ошибки, то есть, имя её функции-конструктора. Его можно получить через `this.name = this.constructor.name`, но в IE11- это работать не будет.
 
-Если поддерживать IE11-, то тут уж придётся в наследнике его записывать вручную.
+Если подерживать IE11-, то тут уж придётся в наследнике его записывать вручную.
 
 Полный код для наследника:
 
@@ -246,7 +246,7 @@ CustomError.prototype.constructor = CustomError;
 // наследник
 */!*
 function PropertyError(property) {
-  CustomError.call(this, "Ошибка в свойстве " + property)
+  CustomError.call(this, "Отсутствует свойство " + property)
   this.name = "PropertyError";
 
   this.property = property;

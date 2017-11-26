@@ -3,38 +3,35 @@
 ```js run no-beautify
 function debounce(f, ms) {
 
-  let timer = null;
+  var state = null;
 
-  return function (...args) {
-    const onComplete = () => {
-      f.apply(this, args);
-      timer = null;
-    }
+  var COOLDOWN = 1;
 
-    if (timer) {
-      clearTimeout(timer);
-    }
+  return function() {
+    if (state) return;
 
-    timer = setTimeout(onComplete, ms);
-  };
+    f.apply(this, arguments);
+
+    state = COOLDOWN;
+
+    setTimeout(function() { state = null }, ms);
+  }
+
 }
 
 function f(x) { alert(x) }
-let f = debounce(f, 1000);
+var f = debounce(f, 1000);
 
-f(1); // вызов отложен на 1000 мс
-f(2); // предыдущий отложенный вызов игнорируется, текущий (2) откладывается на 1000 мс
+f(1); // 1, выполнится сразу же
+f(2); // игнор
 
-// через 1 секунду появится alert(2)
-
-setTimeout( function() { f(3) }, 1100); // через 1100 мс отложим вызов еще на 1000 мс
-setTimeout( function() { f(4) }, 1200); // игнорируем вызов (3) 
-
-// через 2200 мс от начала выполнения появится alert(4)
+setTimeout( function() { f(3) }, 100); // игнор (прошло только 100 мс)
+setTimeout( function() { f(4) }, 1100); // 4, выполнится
+setTimeout( function() { f(5) }, 1500); // игнор
 ```
 
 Вызов `debounce` возвращает функцию-обёртку. Все необходимые данные для неё хранятся в замыкании.
 
-При первом вызове обертки в значении переменной `timer` находится `null` и происходит вызов `setTimeout`. 
+При вызове ставится таймер и состояние `state` меняется на константу `COOLDOWN` ("в процессе охлаждения").
 
-Этот вызов во-первых отложит выполнение декорируемой функции на `ms` миллисекунд, а во-вторых установит в качестве значения `time` числовой идентификатор, который позволит обнулить отложенное задание при последующих вызовах.
+Последующие вызовы игнорируются, пока таймер не обнулит состояние.
